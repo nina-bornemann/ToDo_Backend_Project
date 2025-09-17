@@ -30,7 +30,8 @@ public class ToDoController {
 
     @PostMapping
     public ResponseEntity<Todo> addToDo(@RequestBody ToDoDto dto) {
-        return service.addToDo(dto);
+        Todo created = service.addToDo(dto);
+        return ResponseEntity.created(URI.create("/api/todo" + created.id())).body(created);
     }
 
     @GetMapping("/{id}")
@@ -45,7 +46,8 @@ public class ToDoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Todo> deleteById(@PathVariable String id) {
-        return service.deleteById(id);
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

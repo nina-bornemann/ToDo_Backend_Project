@@ -18,19 +18,20 @@ import java.util.UUID;
 public class TodoService {
 
     private final TodoRepo repo;
+    private final IdService idService;
 
-    public TodoService(TodoRepo repo) {
+    public TodoService(TodoRepo repo, IdService idService) {
         this.repo = repo;
+        this.idService = idService;
     }
 
     public List<Todo> getAllToDos() {
         return repo.findAll();
     }
 
-    public ResponseEntity<Todo> addToDo(ToDoDto dto) {
-        Todo newToDo = new Todo(UUID.randomUUID().toString(), dto.description(),dto.status());
-        repo.save(newToDo);
-        return ResponseEntity.created(URI.create("/api/todo" + newToDo.id())).body(newToDo);
+    public Todo addToDo(ToDoDto dto) {
+        Todo newToDo = new Todo(idService.randomId(), dto.description(),dto.status());
+        return repo.save(newToDo);
     }
 
     public Optional<Todo> getToDoById(String id) {
@@ -46,10 +47,9 @@ public class TodoService {
         return updated;
     }
 
-    public ResponseEntity<Todo> deleteById(String id) {
+    public void deleteById(String id) {
         Todo existing = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
         repo.delete(existing);
-        return ResponseEntity.noContent().build();
     }
 
 }
