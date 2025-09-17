@@ -37,7 +37,7 @@ delete (CRUD) tasks.
 - Maven
 
 ### Running the Application
-- Clone the repository:
+Clone the repository:
 > git clone <repository-url>  
 > cd todo_backend_project
 
@@ -47,7 +47,7 @@ delete (CRUD) tasks.
 The API will be available at http://localhost:8080/api/todo
 
 To start the api using a mongo-db please set the MONGODB environment variable 
-> mongodb+srv://<user>:<password>@<host>/<db>
+> mongodb+srv://user:password@host/db
 
 
 ## ❓ API Endpoints ❗️
