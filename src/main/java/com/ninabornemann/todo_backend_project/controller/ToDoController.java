@@ -3,9 +3,11 @@ package com.ninabornemann.todo_backend_project.controller;
 import com.ninabornemann.todo_backend_project.dto.ToDoDto;
 import com.ninabornemann.todo_backend_project.models.Todo;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.util.*;
 
 @RestController
@@ -21,11 +23,12 @@ public class ToDoController {
 
 
     @PostMapping
-    public Todo addToDo(@RequestBody ToDoDto dto) {
+    public ResponseEntity<Todo> addToDo(@RequestBody ToDoDto dto) {
         Todo newToDo = new Todo(UUID.randomUUID().toString(), dto.description(),dto.status());
         allToDos.add(newToDo);
-        return newToDo;
+        return ResponseEntity.created(URI.create("/api/todo" + newToDo.id())).body(newToDo);
     }
+
 
     @GetMapping("/{id}")
     public Optional<Todo> getToDoById(@PathVariable String id) {
