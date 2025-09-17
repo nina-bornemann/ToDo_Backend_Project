@@ -1,3 +1,5 @@
+[![Java CI with Maven](https://github.com/nina-bornemann/ToDo_Backend_Project/actions/workflows/maven.yml/badge.svg)](https://github.com/nina-bornemann/ToDo_Backend_Project/actions/workflows/maven.yml) 
+
 #  ✅ Kanban To-Do List 📋
 
 A simple Spring Boot backend application to manage a 
