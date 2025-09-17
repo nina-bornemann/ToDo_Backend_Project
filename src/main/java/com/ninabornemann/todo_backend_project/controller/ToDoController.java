@@ -49,10 +49,11 @@ public class ToDoController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable String id) {
+    public ResponseEntity<Todo> deleteById(@PathVariable String id) {
         Todo existing = allToDos.stream()
                 .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
         allToDos.remove(existing);
+        return ResponseEntity.noContent().build();
     }
 
 }
