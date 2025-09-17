@@ -3,6 +3,7 @@ package com.ninabornemann.todo_backend_project.controller;
 import com.ninabornemann.todo_backend_project.dto.ToDoDto;
 import com.ninabornemann.todo_backend_project.models.Todo;
 import com.ninabornemann.todo_backend_project.repository.TodoRepo;
+import com.ninabornemann.todo_backend_project.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,46 +17,35 @@ import java.util.*;
 @RequestMapping("/api/todo")
 public class ToDoController {
 
-    private final TodoRepo repo;
+    private final TodoService service;
 
-    public ToDoController(TodoRepo repo) {
-        this.repo = repo;
+    public ToDoController(TodoService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<Todo> getAllToDos() {
-        return repo.findAll();
+        return service.getAllToDos();
     }
-
 
     @PostMapping
     public ResponseEntity<Todo> addToDo(@RequestBody ToDoDto dto) {
-        Todo newToDo = new Todo(UUID.randomUUID().toString(), dto.description(),dto.status());
-        repo.save(newToDo);
-        return ResponseEntity.created(URI.create("/api/todo" + newToDo.id())).body(newToDo);
+        return service.addToDo(dto);
     }
-
 
     @GetMapping("/{id}")
     public Optional<Todo> getToDoById(@PathVariable String id) {
-        return Optional.ofNullable(repo.findById(id).orElseThrow(IllegalArgumentException::new));
+        return service.getToDoById(id);
     }
 
     @PutMapping("/{id}")
     public Todo updateToDoById(@PathVariable String id, @RequestBody ToDoDto dto) {
-        Todo existing = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
-        Todo updated  = existing.withDescription(dto.description());
-        updated = updated.withStatus(dto.status());
-        repo.delete(existing);
-        repo.save(updated);
-        return updated;
+        return service.updateToDoById(id, dto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Todo> deleteById(@PathVariable String id) {
-        Todo existing = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
-        repo.delete(existing);
-        return ResponseEntity.noContent().build();
+        return service.deleteById(id);
     }
 
 }
