@@ -1,5 +1,7 @@
 package com.ninabornemann.todo_backend_project.dto;
 
-public record ToDoDto(String description, String status) {
+import com.ninabornemann.todo_backend_project.models.Status;
+
+public record ToDoDto(String description, Status status) {
 
 }

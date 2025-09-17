@@ -36,12 +36,20 @@ public class ToDoController {
 
     @PutMapping("/{id}")
     public Todo updateToDoById(@PathVariable String id, @RequestBody ToDoDto dto) {
-        Todo existing = allToDos.stream().findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
+        Todo existing = allToDos.stream()
+                .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
         Todo updated  = existing.withDescription(dto.description());
         updated = updated.withStatus(dto.status());
         allToDos.remove(existing);
         allToDos.add(updated);
         return updated;
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable String id) {
+        Todo existing = allToDos.stream()
+                .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
+        allToDos.remove(existing);
     }
 
 }
