@@ -35,7 +35,7 @@ class ToDoControllerTest {
 
     @DirtiesContext
     @Test
-    void getAllToDos() throws Exception {
+    void getAllToDos_shouldReturnStatus_isOk() throws Exception {
         Todo t1 = new Todo("123", "start Spring", Status.OPEN);
         repo.save(t1);
 
@@ -56,7 +56,7 @@ class ToDoControllerTest {
 
     @DirtiesContext
     @Test
-    void addTodo() throws Exception {
+    void addTodo_shouldReturnStatus_isCreated() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/todo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -77,7 +77,7 @@ class ToDoControllerTest {
 
     @DirtiesContext
     @Test
-    void getTodoById() throws Exception {
+    void getTodoById_shouldReturnStatus_isOk() throws Exception {
         Todo t1 = new Todo("123", "start Spring", Status.OPEN);
         repo.save(t1);
 
@@ -90,6 +90,19 @@ class ToDoControllerTest {
                           "status": "OPEN"
                         }
                         """));
+    }
+
+    @DirtiesContext
+    @Test
+    void getTodoById_shouldThrow_IllegalArgumentException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/todo/2323"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                                                              {
+                                                                "errorMessage": "No To-Do was found under this id."
+                                                              }
+                                                              """))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.instant").isNotEmpty());
     }
 
     @DirtiesContext
@@ -114,6 +127,27 @@ class ToDoControllerTest {
                             "status": "DONE"
                         }
                         """));
+    }
+
+    @DirtiesContext
+    @Test
+    void updateToDoById_shouldThrow_ResponseStatusException() throws Exception {
+        Todo t1 = new Todo("123", "start Spring", Status.OPEN);
+        repo.save(t1);
+        ToDoDto dto = new ToDoDto("is still working?", Status.DONE);
+
+        String json = new ObjectMapper().writeValueAsString(dto);
+        System.out.println(json);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/todo/2323")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                                                              {
+                                                                "errorMessage": "404 NOT_FOUND \\"No To-Do was found under this id.\\""
+                                                              }
+                                                              """))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.instant").isNotEmpty());
     }
 
     @DirtiesContext
