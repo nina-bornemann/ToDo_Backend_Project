@@ -107,7 +107,7 @@ class ToDoControllerTest {
 
     @DirtiesContext
     @Test
-    void updateToDoById() throws Exception {
+    void updateToDoById_shouldReturn_isOk() throws Exception {
         Todo t1 = new Todo("123", "start Spring", Status.OPEN);
         repo.save(t1);
         ToDoDto dto = new ToDoDto("is still working?", Status.DONE);
@@ -152,7 +152,7 @@ class ToDoControllerTest {
 
     @DirtiesContext
     @Test
-    void deleteById() throws Exception {
+    void deleteById_shouldReturn_noContent() throws Exception {
         Todo t1 = new Todo("123", "start Spring", Status.OPEN);
         repo.save(t1);
 
@@ -160,6 +160,19 @@ class ToDoControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
                 .andExpect(MockMvcResultMatchers.content().string(""))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist());
+    }
+
+    @DirtiesContext
+    @Test
+    void deleteById_shouldThrow_ResponseStatusException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/todo/2424"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                                                                {
+                                                                  "errorMessage": "404 NOT_FOUND \\"No To-Do was found under this id.\\""
+                                                                }
+                                                                """))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.instant").isNotEmpty());
     }
 
 }
