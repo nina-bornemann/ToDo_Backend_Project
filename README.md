@@ -15,6 +15,7 @@ delete (CRUD) tasks.
 - Update To-Do: Modify a task’s description and status without altering the ID
 - Delete To-Do: Remove tasks by ID
 - Tested using JUnit, Mockito and Integration tests
+- Exception Handling via @RestControllerAdvise
 - Integrated frontend
 
 ---
@@ -88,8 +89,23 @@ Integration tests for ToDoController use MockMvc to simulate HTTP requests.
 Run tests with:
 > mvn test
 
+## 🚦 Exception Handling
+This project includes a global exception handling setup using @RestControllerAdvice.
+Custom exceptions such as NoSuchElementException and IllegalArgumentException 
+are translated into consistent JSON error responses with an errorMessage and 
+a timestamp (instant).
 
-## Notes
+For example:
+> {  
+> "errorMessage": "No To-Do was found under this id.",  
+> "instant": "2025-09-22T17:46:30.240606Z"  
+> }  
+
+This ensures clients receive a clear, structured error message. Unexpected 
+runtime errors are also caught and mapped to proper HTTP status codes (400 
+for bad requests, 404 for missing data, 500 for internal errors).
+
+## 💬 Notes
 - IDs are generated using a custom IdService.
 - Updating a To-Do replaces the old entity in the repository.
 - Proper error handling with HTTP status codes:
