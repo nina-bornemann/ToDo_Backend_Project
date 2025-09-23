@@ -4,7 +4,7 @@
 
 A simple Spring Boot backend application to manage a 
 To-Do list. It allows you to create, read, update, and 
-delete (CRUD) tasks.
+delete (CRUD) tasks and lets ChatGPT check your input for spelling errors.
 
 ---
 
@@ -14,6 +14,7 @@ delete (CRUD) tasks.
 - Read To-Do: Get all tasks or a specific task by ID
 - Update To-Do: Modify a task’s description and status without altering the ID
 - Delete To-Do: Remove tasks by ID
+- Checks Spelling of POST and PUT requests with ChatGPT 🤖
 - Tested using JUnit, Mockito and Integration tests
 - Exception Handling via @RestControllerAdvise
 - Integrated frontend
@@ -26,6 +27,7 @@ delete (CRUD) tasks.
 - Spring Boot (Web, Data)
 - MongoDB
 - Flapdoodle Embedded MongoDB (for integration tests)
+- ChatGPT Api (for spelling errors)
 - JUnit 5 & Mockito (testing)
 - MockMvc (integration testing)
 - Lombok
@@ -36,7 +38,7 @@ delete (CRUD) tasks.
 ## 🎬 Getting Started
 
 ### Prerequisites
-- Java 17+
+- Java 24
 - Maven
 
 ### Running the Application
@@ -52,6 +54,8 @@ The API will be available at http://localhost:8080/api/todo
 To start the api using a mongo-db please set the MONGODB environment variable 
 > mongodb+srv://user:password@host/db
 
+To use the ChatGPT API set the OPENAI_API_Key environment variable
+> export OPENAI_API_KEY="your_openai_api_key_here"
 
 ## ❓ API Endpoints ❗️
 
