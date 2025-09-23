@@ -24,7 +24,7 @@ class TodoServiceTest {
         TodoRepo mockRepo = mock(TodoRepo.class);
         Todo t1 = new Todo("123", "start Mockito", Status.OPEN);
         Todo t2 = new Todo("234", "conquer Mockito", Status.IN_PROGRESS);
-        TodoService service = new TodoService(mockRepo, null);
+        TodoService service = new TodoService(mockRepo, null, null);
 
         when(mockRepo.findAll()).thenReturn(List.of(t1, t2));
 
@@ -40,7 +40,7 @@ class TodoServiceTest {
         TodoRepo mockRepo = mock(TodoRepo.class);
         Todo t1 = new Todo("123", "start Mockito", Status.OPEN);
         Todo t2 = new Todo("234", "conquer Mockito", Status.IN_PROGRESS);
-        TodoService service = new TodoService(mockRepo, null);
+        TodoService service = new TodoService(mockRepo, null, null);
 
         when(mockRepo.findById("234")).thenReturn(Optional.of(t2));
 
@@ -55,32 +55,37 @@ class TodoServiceTest {
     void addTodo() {
         TodoRepo mockRepo = mock(TodoRepo.class);
         IdService mockIdService = mock(IdService.class);
+        ChatGPTService mockChatGptService = mock(ChatGPTService.class);
         Todo t1 = new Todo("123", "start Mockito", Status.OPEN);
         Todo t2 = new Todo("234", "conquer Mockito", Status.IN_PROGRESS);
-        ToDoDto t21 = new ToDoDto("conquer Mockito", Status.IN_PROGRESS);
+        ToDoDto t21 = new ToDoDto("conquuer Mockito", Status.IN_PROGRESS);
 
         when(mockRepo.save(t2)).thenReturn(t2);
         when(mockIdService.randomId()).thenReturn("234");
+        when(mockChatGptService.checkSpelling(t21.description())).thenReturn(t2.description());
 
-        TodoService service = new TodoService(mockRepo, mockIdService);
+        TodoService service = new TodoService(mockRepo, mockIdService, mockChatGptService);
 
         Todo actual = service.addToDo(t21);
 
         assertEquals(t2, actual);
         verify(mockIdService).randomId();
         verify(mockRepo).save(t2);
-        verifyNoMoreInteractions(mockIdService, mockRepo);
+        verify(mockChatGptService).checkSpelling(t21.description());
+        verifyNoMoreInteractions(mockIdService, mockRepo, mockChatGptService);
     }
 
     @Test
     void updateTodo(){
         TodoRepo mockRepo = mock(TodoRepo.class);
+        ChatGPTService mockChatGPTService = mock(ChatGPTService.class);
         Todo t1 = new Todo("123", "start Mockito", Status.OPEN);
-        ToDoDto t12 = new ToDoDto("conquer Mockito", Status.IN_PROGRESS);
+        ToDoDto t12 = new ToDoDto("conqueer Mockito", Status.IN_PROGRESS);
         Todo t2 = new Todo("123","conquer Mockito", Status.IN_PROGRESS);
-        TodoService service = new TodoService(mockRepo, null);
+        TodoService service = new TodoService(mockRepo, null, mockChatGPTService);
 
         when(mockRepo.findById("123")).thenReturn(Optional.of(t1));
+        when(mockChatGPTService.checkSpelling(t12.description())).thenReturn(t2.description());
         doNothing().when(mockRepo).delete(t1);
         when(mockRepo.save(t2)).thenReturn(t2);
 
@@ -88,16 +93,17 @@ class TodoServiceTest {
 
         assertEquals(t2, actual);
         verify(mockRepo).findById("123");
+        verify(mockChatGPTService).checkSpelling(t12.description());
         verify(mockRepo).delete(t1);
         verify(mockRepo).save(t2);
-        verifyNoMoreInteractions(mockRepo);
+        verifyNoMoreInteractions(mockRepo, mockChatGPTService);
     }
 
     @Test
     void deleteById() {
         TodoRepo mockRepo = mock(TodoRepo.class);
         Todo t1 = new Todo("123", "start Mockito", Status.OPEN);
-        TodoService service = new TodoService(mockRepo, null);
+        TodoService service = new TodoService(mockRepo, null, null);
 
         when(mockRepo.findById("123")).thenReturn(Optional.of(t1));
         doNothing().when(mockRepo).delete(t1);

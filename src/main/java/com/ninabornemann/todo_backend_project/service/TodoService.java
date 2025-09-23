@@ -19,10 +19,12 @@ public class TodoService {
 
     private final TodoRepo repo;
     private final IdService idService;
+    private final ChatGPTService chatGPTService;
 
-    public TodoService(TodoRepo repo, IdService idService) {
+    public TodoService(TodoRepo repo, IdService idService, ChatGPTService chatGPTService) {
         this.repo = repo;
         this.idService = idService;
+        this.chatGPTService = chatGPTService;
     }
 
     public List<Todo> getAllToDos() {
@@ -30,7 +32,8 @@ public class TodoService {
     }
 
     public Todo addToDo(ToDoDto dto) {
-        Todo newToDo = new Todo(idService.randomId(), dto.description(),dto.status());
+        String checkedDescription = chatGPTService.checkSpelling(dto.description());
+        Todo newToDo = new Todo(idService.randomId(), checkedDescription,dto.status());
         return repo.save(newToDo);
     }
 
@@ -40,7 +43,8 @@ public class TodoService {
 
     public Todo updateToDoById(String id, ToDoDto dto) {
         Todo existing = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
-        Todo updated  = existing.withDescription(dto.description());
+        String checkedDescription = chatGPTService.checkSpelling(dto.description());
+        Todo updated  = existing.withDescription(checkedDescription);
         updated = updated.withStatus(dto.status());
         repo.delete(existing);
         repo.save(updated);
