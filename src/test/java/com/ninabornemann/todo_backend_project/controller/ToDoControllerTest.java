@@ -179,6 +179,24 @@ class ToDoControllerTest {
 
         String json = new ObjectMapper().writeValueAsString(dto);
         System.out.println(json);
+
+        mockServer.expect(requestTo("https://api.openai.com/v1/chat/completions"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("""
+                                           {
+                                             "choices":
+                                             [
+                                                {
+                                                   "message" :
+                                                   {
+                                                    "role": "user",
+                                                    "content": "is still working?"
+                                                   }
+                                                }
+                                             ]
+                                           }
+                                        """, MediaType.APPLICATION_JSON));
+
         mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/todo/123")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -192,6 +210,41 @@ class ToDoControllerTest {
                             "status": "DONE"
                         }
                         """));
+    }
+
+    @DirtiesContext
+    @Test
+    void updateToDoById_shouldCheckSpelling_withChatGpt() throws Exception {
+        Todo t1 = new Todo("123", "start Spring", Status.OPEN);
+        repo.save(t1);
+        ToDoDto dto = new ToDoDto("conqueer Mockito", Status.DONE);
+        String json = new ObjectMapper().writeValueAsString(dto);
+        mockServer.expect(requestTo("https://api.openai.com/v1/chat/completions"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("""
+                                           {
+                                             "choices":
+                                             [
+                                                {
+                                                   "message" :
+                                                   {
+                                                    "role": "user",
+                                                    "content": "conquer Mockito"
+                                                   }
+                                                }
+                                             ]
+                                           }
+                                        """, MediaType.APPLICATION_JSON));
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/todo/123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                                {
+                                    "description": "conquer Mockito",
+                                    "status": "DONE"
+                                }
+                                """));
     }
 
     @DirtiesContext

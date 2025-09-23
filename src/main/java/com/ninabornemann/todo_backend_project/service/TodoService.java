@@ -43,7 +43,8 @@ public class TodoService {
 
     public Todo updateToDoById(String id, ToDoDto dto) {
         Todo existing = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No To-Do was found under this id."));
-        Todo updated  = existing.withDescription(dto.description());
+        String checkedDescription = chatGPTService.checkSpelling(dto.description());
+        Todo updated  = existing.withDescription(checkedDescription);
         updated = updated.withStatus(dto.status());
         repo.delete(existing);
         repo.save(updated);
