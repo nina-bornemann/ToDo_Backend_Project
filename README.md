@@ -2,6 +2,9 @@
 
 #  ✅ Kanban To-Do List 📋
 
+![img.png](img.png)
+
+
 A simple Spring Boot backend application to manage a 
 To-Do list. It allows you to create, read, update, and 
 delete (CRUD) tasks and lets ChatGPT check your input for spelling errors.
